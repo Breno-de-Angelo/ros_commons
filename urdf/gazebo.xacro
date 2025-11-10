@@ -147,6 +147,59 @@
     </gazebo>
   </xacro:macro>
 
+  <!-- According to the docs, the implementation of the skid steer controller in ROS2 is done
+       using the differential drive controller plugin.
+       https://github.com/ros-simulation/gazebo_ros_pkgs/wiki/ROS-2-Migration:-Skid-Steer-drive
+  -->
+  <xacro:macro
+    name="skid_steer_controller"
+    params="
+      name
+      left_joint_front
+      right_joint_front
+      left_joint_rear
+      right_joint_rear
+      wheel_diameter
+      wheel_separation
+      publish_odom:=false
+    "
+  >
+    <gazebo>
+      <plugin name="${name}_joint_states" filename="libgazebo_ros_joint_state_publisher.so">
+        <joint_name>${right_joint_front}</joint_name>
+        <joint_name>${left_joint_front}</joint_name>
+        <joint_name>${right_joint_rear}</joint_name>
+        <joint_name>${left_joint_rear}</joint_name>
+      </plugin>
+      <plugin name="${name}_controller" filename="libgazebo_ros_diff_drive.so">
+        <update_rate>50</update_rate>
+        <num_wheel_pairs>2</num_wheel_pairs>
+
+        <left_joint>${left_joint_front}</left_joint>
+        <right_joint>${right_joint_front}</right_joint>
+        <left_joint>${left_joint_rear}</left_joint>
+        <right_joint>${right_joint_rear}</right_joint>
+
+        <!-- kinematics -->
+        <wheel_separation>${wheel_separation}</wheel_separation>
+        <wheel_separation>${wheel_separation}</wheel_separation>
+
+        <wheel_diameter>${wheel_diameter}</wheel_diameter>
+        <wheel_diameter>${wheel_diameter}</wheel_diameter>
+
+        <max_wheel_torque>20</max_wheel_torque>
+        <max_wheel_acceleration>1.0</max_wheel_acceleration>
+
+        <odometry_frame>odom</odometry_frame>
+        <robot_base_frame>base_link</robot_base_frame>
+
+        <publish_odom>${publish_odom}</publish_odom>
+        <publish_odom_tf>${publish_odom}</publish_odom_tf>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+
+
   <!-- See: http://sdformat.org/tutorials?tut=sdformat_urdf_extensions&cat=specification -->
   <xacro:macro
     name="remove_friction"
