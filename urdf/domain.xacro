@@ -453,7 +453,6 @@
     name="camera_link"
     params="name"
   >
-    <link name="${name}"/>
     <link name="${name}_optical"/>
     <xacro:joint_fixed
       parent="${name}"
